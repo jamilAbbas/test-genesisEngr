@@ -38,12 +38,17 @@ const SubmitButton = styled.button`
 `;
 
 // React component
-const CountryForm = ({ onSubmit, countryName, setCountryName }) => {
+const CountryForm = ({
+  onSubmit,
+  countryName,
+  setCountryName,
+  provinceState,
+  setProvinceState,
+}) => {
   const handleSubmit = (e) => {
     e.preventDefault();
-    onSubmit(countryName);
+    onSubmit(countryName, provinceState);
   };
-
   return (
     <FormContainer>
       <Form onSubmit={handleSubmit}>
@@ -54,6 +59,13 @@ const CountryForm = ({ onSubmit, countryName, setCountryName }) => {
           id="countryName"
           value={countryName}
           onChange={(e) => setCountryName(e.target.value)}
+        />
+        <Label htmlFor="province">Province/State:</Label>
+        <Input
+          type="text"
+          id="province-state"
+          value={provinceState}
+          onChange={(e) => setProvinceState(e.target.value)}
         />
         <SubmitButton type="submit">Submit</SubmitButton>
       </Form>

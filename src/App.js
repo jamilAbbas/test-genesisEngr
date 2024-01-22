@@ -4,22 +4,25 @@ import CountryForm from "./components/Forms/CountryFrom";
 import { useEffect, useState } from "react";
 import axios from "axios";
 import styled from "styled-components";
+// import { useNavigate } from "react-router-dom";
+import Uni from "./pages/Uni";
 
 function App() {
   const [countryName, setCountryName] = useState("");
   const [loading, setLoading] = useState(false);
   const [uniList, setUniList] = useState(null);
+  const [provinceState, setProvinceState] = useState("");
+
   const [currentUni, setCurrentUni] = useState(null);
+  // const navigate = useNavigate();
   const onSubmit = async (value) => {
     try {
       setLoading(true);
-      debugger;
       let existingData = await getUniData(countryName);
       if (existingData.length > 0) {
         setUniList(existingData);
         return;
       } else {
-        debugger;
         const response = await axios.get(
           `http://universities.hipolabs.com/search?country=${value}`
         );
@@ -29,7 +32,7 @@ function App() {
             uniData: response.data,
             country: countryName,
           });
-          const data = await getUniData(countryName);
+          const data = await getUniData(countryName, provinceState);
           setUniList(data);
         }
       }
@@ -42,24 +45,47 @@ function App() {
     const extractedUrl = webUrl.slice(1, -1);
     window.open(extractedUrl, "_blank");
   };
-  const getUniData = async (countryName) => {
+  const getUniData = async (countryName, provinceState) => {
     try {
       setLoading(true);
-      const url = `http://localhost:5000/api/v1/uni/${countryName}`;
-      const result = await axios.get(url);
+      let params = {};
+      let url = "http://localhost:5000/api/v1/uni/getByCountry";
+
+      if (countryName) {
+        params = {
+          ...params,
+          country: countryName,
+        };
+      }
+      if (provinceState) {
+        params = {
+          ...params,
+          provinceState,
+        };
+      }
+
+      const result = await axios.get(url, {
+        params: params,
+      });
+
       return result.data.data;
     } catch (err) {
     } finally {
       setLoading(false);
     }
   };
+  // const navigateToNewPage = () => {
+  //   navigate("");
+  // };
   return (
     <StyledApp>
+      {/* <Uni /> */}
       <CountryForm
         setCountryName={setCountryName}
         countryName={countryName}
         onSubmit={onSubmit}
       />
+
       <div>
         <h1>List of Universities</h1>
         {!uniList && !countryName && (
